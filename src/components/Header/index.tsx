@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ params }) => {
 
   const handleSearch = (value: string) => {
     setSearch(value)
-    debounce(handleUpdateSearchValue, 1000)()
+    debounce(handleUpdateSearchValue, 300)()
   }
 
   return (
