@@ -1,20 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react'
+import { ThemeProvider } from 'styled-components'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { Routes } from './src/routes/root'
+import { TasksProvider } from './src/context/TasksContext'
+import { theme } from './src/styles/Theme'
+import { OfflineStorageProvider } from './src/storage/OfflineStorageProvider'
+import { ContainerApp } from './src/styles/Globals'
 
-export default function App() {
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <ContainerApp>
+      <TasksProvider>
+        <ThemeProvider theme={theme}>
+          <OfflineStorageProvider>
+            <SafeAreaProvider>
+              <Routes />
+            </SafeAreaProvider>
+          </OfflineStorageProvider>
+        </ThemeProvider>
+      </TasksProvider>
+    </ContainerApp>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App
