@@ -1,15 +1,11 @@
 import * as S from './styles'
 import * as ImagePicker from 'expo-image-picker'
-import React, { useContext, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import uuid from 'react-native-uuid'
+import React, { useState } from 'react'
 import { Feather } from '@expo/vector-icons'
-import { Status } from '../../enums/Status'
-import { TasksContext } from '../../context/TasksContext'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../../routes/types'
-import { Alert } from 'react-native'
 import { Button } from '../../components/Button'
+import { useTask } from '../../hooks/useTask'
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateTask'>
 
@@ -24,32 +20,12 @@ type Form = {
 }
 
 export const CreateTask: React.FC<CreateTaskProps> = ({ navigation }) => {
-  const { setTasks } = useContext(TasksContext)
+  const { handleCreate } = useTask()
   const [form, setForm] = useState<Form>({
     title: '',
     description: '',
     attachment: '',
   })
-
-  const handleCreate = async () => {
-    try {
-      if (!form.title && !form.description) return Alert.alert('Preencha todos os campos')
-
-      const tasksData = await AsyncStorage.getItem('tasks')
-      const existingTasks = tasksData ? JSON.parse(tasksData) : []
-
-      const newTask = { ...form, id: uuid.v4(), sync: false, status: Status.PENDING }
-      const updatedTasks = [newTask, ...existingTasks]
-
-      setTasks(updatedTasks)
-
-      await AsyncStorage.setItem('tasks', JSON.stringify(updatedTasks))
-
-      navigation.goBack()
-    } catch (error) {
-      console.error('Error:', error)
-    }
-  }
 
   const handleUploadAssets = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -93,7 +69,7 @@ export const CreateTask: React.FC<CreateTaskProps> = ({ navigation }) => {
           onChangeText={value => setForm({ ...form, description: value })}
           style={{ height: 96 }}
         />
-        <Button onPress={handleCreate}>Criar tarefa</Button>
+        <Button onPress={() => handleCreate(form)}>Criar tarefa</Button>
       </S.Form>
     </S.Container>
   )
